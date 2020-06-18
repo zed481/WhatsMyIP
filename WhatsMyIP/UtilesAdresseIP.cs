@@ -1,26 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace WhatsMyIP
 {
     class UtilesAdresseIP
     {
-        public static string getMonAdresseIP()
+        /// <summary>
+        /// Détermine l'addresse IP de l'appareil actuel en la demandant au site DuckDuckGo.com
+        /// </summary>
+        /// <returns>Adresse ip de l'appareil</returns>
+        public static string getMonAdresseIP( )
         {
-            // Create web client simulating IE6.
             using ( WebClient client = new WebClient( ) )
             {
-                client.Headers[ "User-Agent" ] = UtilesAdresseIP.getUserAgentAleatoire( );
+                client.Headers[ "User-Agent" ] = getUserAgentAleatoire( );
 
-                // Download data.
-                string strAdresseIP = client.DownloadString("https://ipv4.icanhazip.com/");
-
-                // Write values.
-                return strAdresseIP;
+                string strContenu = client.DownloadString("https://duckduckgo.com/?t=ffnt&q=what+is+my+ip&ia=answer");
+                string sub = strContenu.Substring( strContenu.IndexOf( "Your IP address is" ), 35 );
+                Regex ip = new Regex(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
+                MatchCollection result = ip.Matches(sub);
+                return result[ 0 ].Value;
             }
         }
 
+        /// <summary>
+        /// Liste d'entêtes HTTP User-Agent pour simuler un navigateur
+        /// </summary>
         private static readonly List<String> _lstUserAgents = new List<String>
             {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
@@ -48,6 +55,10 @@ namespace WhatsMyIP
             "Mozilla/5.0 (iPhone; CPU iPhone OS 12_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/22.0 Mobile/16B92 Safari/605.1.15"
         };
 
+        /// <summary>
+        /// User-Agent aléatoire provenant de la liste ci-dessus
+        /// </summary>
+        /// <returns>User-Agent</returns>
         private static string getUserAgentAleatoire( )
         {
             Random rnd = new Random();

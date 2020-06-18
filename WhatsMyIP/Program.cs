@@ -8,6 +8,7 @@ namespace WhatsMyIP
         static void Main( )
         {
             Console.WriteLine( UtilesAdresseIP.getMonAdresseIP( ) );
+            Console.ReadKey( );
         }
     }
 
